@@ -12,5 +12,5 @@
  base de datos:
  postgres SQLaa
  arquitectura:
- exagonal
+ hexagonal
  
