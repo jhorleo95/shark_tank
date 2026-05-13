@@ -10,7 +10,7 @@
  backend:
  django
  base de datos:
- postgres SQL
+ postgres SQLaa
  arquitectura:
  exagonal
  
