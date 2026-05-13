@@ -13,4 +13,3 @@
  postgres SQLaa
  arquitectura:
  hexagonal
- jhjhj
