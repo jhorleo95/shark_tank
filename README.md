@@ -1,15 +1,15 @@
-﻿grupo MORRONCITOS
+grupo MORRONCITOS
  RUBRO 3
  integrates:
- jhordan leonidas illanes suxo        scrum master
- cristhofer edson castillo illanes    dev
- luzmila pampita pati torrez          dev
- shirley andrea arias                 dev
+ jhordan leonidas illanes suxo        scrum master backend
+ cristhofer edson castillo illanes    dev frontend
+ luzmila pampita pati torrez          dev backend
+ shirley andrea arias                 dev frotned
  frontend:
  react next.js
  backend:
  django
  base de datos:
- postgres SQLaa
+ MySQL
  arquitectura:
- hexagonal
+ exagonal
