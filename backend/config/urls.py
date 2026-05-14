@@ -25,4 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/ping/', ping, name='ping'),
     path('api/', include('adapters.inbound.urls')),
+
+    path("api/", include("entradas.urls")),
+    path("api/", include("salidas.urls")),
 ]
