@@ -61,3 +61,47 @@
 .icon {
   font-size: 1.25rem;
 }
+
+.navGroup {
+  margin-bottom: 1rem;
+}
+
+.navGroupTitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  padding: 0 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.navGroupToggle {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.toggleIcon {
+  font-size: 0.7rem;
+  margin-left: auto;
+  opacity: 0.5;
+}
+
+.subNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-left: 1.5rem;
+  margin-top: 0.25rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  margin-left: 1.5rem;
+}
+
+.subNavItem {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}

@@ -88,3 +88,14 @@ class SalidaProductoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalidaProducto
         fields = '__all__'
+
+from django.contrib.auth.models import User
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'email']
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)

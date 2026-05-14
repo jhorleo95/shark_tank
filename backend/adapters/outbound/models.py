@@ -94,6 +94,7 @@ class Item(models.Model):
     codigo_actual = models.CharField(max_length=50, unique=True)
     codigo_anterior = models.CharField(max_length=50, null=True, blank=True)
     descripcion_corta = models.CharField(max_length=255)
+    fotografia = models.ImageField(upload_to='items/', null=True, blank=True)
     especificacion_tecnica = models.TextField(null=True, blank=True)
     
     area_categoria = models.ForeignKey(AreaCategoria, on_delete=models.RESTRICT)
