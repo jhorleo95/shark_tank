@@ -17,10 +17,11 @@ export default function LoginPage() {
     setError('');
 
     try {
+      const cleanUsername = username.trim();
       const res = await fetch('http://127.0.0.1:8000/api/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: cleanUsername, password })
       });
 
       if (res.ok) {
@@ -29,10 +30,13 @@ export default function LoginPage() {
         localStorage.setItem('refresh_token', data.refresh);
         router.push('/dashboard');
       } else {
-        setError('Credenciales incorrectas');
+        const text = await res.text();
+        console.error("Status:", res.status, "Login fallido RAW TEXT:", text);
+        setError(`Error del servidor (${res.status}): Revisa la consola para más detalles.`);
       }
     } catch (err) {
-      setError('Error de conexión con el servidor');
+      console.error("Error de fetch:", err);
+      setError('Error de conexión con el servidor. Verifica que el backend esté encendido.');
     } finally {
       setLoading(false);
     }

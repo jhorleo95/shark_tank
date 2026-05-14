@@ -22,14 +22,27 @@ export default function ProductosPage() {
     try {
       const [marcasRes, unidadesRes, areaCatRes] = await Promise.all([
         fetch(`${API_URL}/marcas/`),
-        fetch(`${API_URL}/unidades_medida/`),
-        fetch(`${API_URL}/areacategorias/`)
+        fetch(`${API_URL}/unidades/`),
+        fetch(`${API_URL}/area-categorias/`)
       ]);
-      setMarcas(await marcasRes.json());
-      setUnidades(await unidadesRes.json());
-      setAreaCategorias(await areaCatRes.json());
+
+      const safeJson = async (res: Response) => {
+        if (!res.ok) {
+           console.error("Error API:", res.url, res.status, await res.text());
+           return [];
+        }
+        const text = await res.text();
+        try { return JSON.parse(text); } catch (e) { 
+           console.error("Error parseando JSON de:", res.url, "Response:", text.substring(0, 100)); 
+           return []; 
+        }
+      };
+
+      setMarcas(await safeJson(marcasRes));
+      setUnidades(await safeJson(unidadesRes));
+      setAreaCategorias(await safeJson(areaCatRes));
     } catch (err) {
-      console.error(err);
+      console.error("fetchOptions falló:", err);
     }
   };
 
@@ -37,10 +50,20 @@ export default function ProductosPage() {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/items/`);
-      const json = await res.json();
-      setData(json);
+      if (!res.ok) {
+         console.error("Error API items:", res.status, await res.text());
+         setData([]);
+         return;
+      }
+      const text = await res.text();
+      try {
+        setData(JSON.parse(text));
+      } catch(e) {
+        console.error("Error parseando JSON de items:", text.substring(0, 100));
+        setData([]);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("fetchData falló:", err);
     } finally {
       setLoading(false);
     }
