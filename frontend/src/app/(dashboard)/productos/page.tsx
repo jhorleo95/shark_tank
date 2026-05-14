@@ -1,13 +1,11 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/ui/DataTable';
 import Modal from '@/components/ui/Modal';
-import styles from './page.module.css';
 
 const API_URL = 'http://127.0.0.1:8000/api/v1';
 
-export default function InventarioPage() {
+export default function ProductosPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,7 +66,7 @@ export default function InventarioPage() {
   };
 
   const handleDelete = async (row: any) => {
-    if (confirm('¿Estás seguro de eliminar este producto del inventario?')) {
+    if (confirm('¿Eliminar producto?')) {
       try {
         await fetch(`${API_URL}/items/${row.id}/`, { method: 'DELETE' });
         fetchData();
@@ -86,15 +84,18 @@ export default function InventarioPage() {
     const submitData = new FormData();
     Object.keys(formData).forEach(key => {
       if (formData[key] !== null && formData[key] !== undefined && key !== 'fotografia') {
+        // avoid appending nested objects (like brand details) if they are present
         if (typeof formData[key] !== 'object') {
           submitData.append(key, formData[key]);
         }
       }
     });
 
+    // Make sure we append the specific IDs for relations
     if (formData.area_categoria_id) submitData.append('area_categoria', formData.area_categoria_id || formData.area_categoria);
     if (formData.marca_id) submitData.append('marca', formData.marca_id || formData.marca);
     if (formData.unidad_id) submitData.append('unidad', formData.unidad_id || formData.unidad);
+
 
     if (file) {
       submitData.append('fotografia', file);
@@ -110,45 +111,26 @@ export default function InventarioPage() {
   };
 
   const columns = [
-    { key: 'fotografia', label: 'Foto', width: '60px', render: (row: any) => row.fotografia ? <img src={row.fotografia} alt={row.descripcion_corta} style={{width: 40, height: 40, objectFit: 'cover', borderRadius: '4px'}} /> : <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Sin Foto</span> },
-    { key: 'codigo_actual', label: 'Código', width: '120px' },
-    { key: 'descripcion_corta', label: 'Descripción', width: '350px' },
-    { key: 'marca_nombre', label: 'Marca', width: '120px', render: (row: any) => row.marca_nombre || 'N/A' },
-    { key: 'categoria', label: 'Categoría', width: '150px', render: (row: any) => row.area_categoria_detalle?.categoria_nombre || 'N/A' },
-    { key: 'unidad_nombre', label: 'Unidad', width: '100px', render: (row: any) => row.unidad_nombre || 'N/A' },
-    { key: 'costo_cliente_bs', label: 'Costo (Bs)', width: '100px', render: (row: any) => `Bs. ${row.costo_cliente_bs}` },
-    { 
-      key: 'estado', 
-      label: 'Estado',
-      width: '100px',
-      render: (row: any) => (
-        <span className={`${styles.badge} ${row.estado === 'ACTIVO' ? styles.badgeActive : styles.badgeInactive}`}>
-          {row.estado}
-        </span>
-      )
-    }
+    { key: 'fotografia', label: 'Foto', render: (row: any) => row.fotografia ? <img src={row.fotografia} alt={row.descripcion_corta} style={{width: 50, height: 50, objectFit: 'cover', borderRadius: '4px'}} /> : 'Sin Foto' },
+    { key: 'codigo_actual', label: 'Código' },
+    { key: 'descripcion_corta', label: 'Descripción' },
+    { key: 'marca_nombre', label: 'Marca' },
+    { key: 'estado', label: 'Estado' }
   ];
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <div>
-            <h1 className={styles.title}>Inventario de Productos</h1>
-            <p style={{ color: '#94a3b8' }}>Listado maestro con unidades, costos y mantenimiento de datos</p>
-          </div>
-          <button 
-            onClick={handleOpenNew}
-            style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
-          >
-            + Nuevo Producto
-          </button>
-        </div>
+    <div style={{ padding: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Productos</h1>
+        <button 
+          onClick={handleOpenNew}
+          style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+        >
+          + Nuevo Producto
+        </button>
       </div>
 
-      <div className={`glass-panel ${styles.tableContainer}`}>
-        <DataTable data={data} columns={columns} loading={loading} onEdit={handleEdit} onDelete={handleDelete} />
-      </div>
+      <DataTable data={data} columns={columns} loading={loading} onEdit={handleEdit} onDelete={handleDelete} />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingId ? 'Editar Producto' : 'Nuevo Producto'}>
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -170,11 +152,6 @@ export default function InventarioPage() {
           <div style={{ gridColumn: '1 / -1' }}>
              <label style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Descripción Corta</label>
              <input required value={formData.descripcion_corta || ''} onChange={(e) => setFormData({...formData, descripcion_corta: e.target.value})} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.75rem', borderRadius: '8px', marginTop: '0.5rem' }} />
-          </div>
-
-          <div>
-             <label style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Costo (Bs)</label>
-             <input type="number" step="0.01" value={formData.costo_cliente_bs || ''} onChange={(e) => setFormData({...formData, costo_cliente_bs: e.target.value})} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.75rem', borderRadius: '8px', marginTop: '0.5rem' }} />
           </div>
 
           <div>

@@ -5,7 +5,8 @@ from .views import (
     AreaViewSet, UnidadMedidaViewSet, AreaCategoriaViewSet,
     SucursalViewSet, TipoIngresoViewSet, TipoSalidaViewSet,
     StockSucursalViewSet, EntradaProductoViewSet, DetalleEntradaViewSet,
-    SalidaProductoViewSet, DetalleSalidaViewSet
+    SalidaProductoViewSet, DetalleSalidaViewSet,
+    UserProfileView, ChangePasswordView
 )
 
 router = DefaultRouter()
@@ -26,4 +27,6 @@ router.register(r'detalle-salidas', DetalleSalidaViewSet)
 
 urlpatterns = [
     path('v1/', include(router.urls)),
+    path('users/me/', UserProfileView.as_view(), name='user_profile'),
+    path('users/change-password/', ChangePasswordView.as_view(), name='change_password'),
 ]
