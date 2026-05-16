@@ -91,6 +91,72 @@ class DetalleSalidaViewSet(viewsets.ModelViewSet):
             stock.cantidad_saldo -= detalle.cantidad
             stock.save()
 
+from rest_framework.decorators import action
+from .serializers import ProformaSerializer, DetalleProformaSerializer
+from adapters.outbound.models import Proforma, DetalleProforma
+from django.utils import timezone
+
+class DetalleProformaViewSet(viewsets.ModelViewSet):
+    queryset = DetalleProforma.objects.all()
+    serializer_class = DetalleProformaSerializer
+
+class ProformaViewSet(viewsets.ModelViewSet):
+    queryset = Proforma.objects.all().order_by('-fecha_creacion')
+    serializer_class = ProformaSerializer
+
+    @action(detail=True, methods=['post'])
+    def aprobar(self, request, pk=None):
+        proforma = self.get_object()
+        if proforma.estado != 'PENDIENTE':
+            return Response({'error': 'La proforma no está pendiente.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        with transaction.atomic():
+            proforma.estado = 'APROBADO'
+            proforma.save()
+
+            # Obtener tipo de salida (por defecto el primero o crear uno)
+            tipo_salida, _ = TipoSalida.objects.get_or_create(nombre="Venta por Proforma")
+            
+            # Crear Salida
+            salida = SalidaProducto.objects.create(
+                nro_factura=f"PROF-{proforma.id}",
+                fecha_salida=timezone.now(),
+                sucursal_origen=proforma.sucursal,
+                usuario_id=proforma.vendedor_id
+            )
+
+            # Crear Detalles y descontar stock
+            detalles_proforma = proforma.detalleproforma_set.all()
+            for dp in detalles_proforma:
+                detalle_salida = DetalleSalida.objects.create(
+                    salida=salida,
+                    item=dp.item,
+                    cantidad=dp.cantidad,
+                    motivo=tipo_salida,
+                    area=dp.area,
+                    observacion="Aprobación automática de Proforma"
+                )
+                
+                stock, created = StockSucursal.objects.get_or_create(
+                    item=dp.item, 
+                    sucursal=proforma.sucursal,
+                    defaults={'cantidad_saldo': 0}
+                )
+                stock.cantidad_saldo -= dp.cantidad
+                stock.save()
+
+        return Response({'status': 'Proforma aprobada y salida generada.'})
+
+    @action(detail=True, methods=['post'])
+    def rechazar(self, request, pk=None):
+        proforma = self.get_object()
+        if proforma.estado != 'PENDIENTE':
+            return Response({'error': 'La proforma no está pendiente.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        proforma.estado = 'RECHAZADO'
+        proforma.save()
+        return Response({'status': 'Proforma rechazada.'})
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status

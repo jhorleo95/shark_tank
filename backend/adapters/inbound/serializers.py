@@ -89,12 +89,31 @@ class SalidaProductoSerializer(serializers.ModelSerializer):
         model = SalidaProducto
         fields = '__all__'
 
+from adapters.outbound.models import Proforma, DetalleProforma
+
+class DetalleProformaSerializer(serializers.ModelSerializer):
+    item_detalle = ItemSerializer(source='item', read_only=True)
+    area_nombre = serializers.CharField(source='area.nombre', read_only=True)
+
+    class Meta:
+        model = DetalleProforma
+        fields = '__all__'
+
+class ProformaSerializer(serializers.ModelSerializer):
+    detalles = DetalleProformaSerializer(source='detalleproforma_set', many=True, read_only=True)
+    sucursal_nombre = serializers.CharField(source='sucursal.nombre', read_only=True)
+    
+    class Meta:
+        model = Proforma
+        fields = '__all__'
+
 from django.contrib.auth.models import User
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    rol = serializers.CharField(source='profile.rol', read_only=True)
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'rol']
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)

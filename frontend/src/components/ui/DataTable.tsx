@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ChevronLeft, ChevronRight, Search, Download } from 'lucide-react';
 
 interface Column {
   key: string;
@@ -20,6 +20,20 @@ interface DataTableProps {
 export default function DataTable({ data, columns, onEdit, onDelete, loading }: DataTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Lógica de búsqueda (Hook moved above early returns)
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return data;
+    const lowerSearch = searchTerm.toLowerCase();
+    return data.filter(row => {
+      return columns.some(col => {
+        const val = row[col.key];
+        if (val == null) return false;
+        return String(val).toLowerCase().includes(lowerSearch);
+      });
+    });
+  }, [data, searchTerm, columns]);
 
   if (loading) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando...</div>;
@@ -30,18 +44,85 @@ export default function DataTable({ data, columns, onEdit, onDelete, loading }: 
   }
 
   // Lógica de paginación
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = filteredData.slice(startIndex, endIndex);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1); // Resetear a la primera página al cambiar cantidad
   };
 
+  const handleExportCSV = () => {
+    if (filteredData.length === 0) return;
+    
+    // Preparar encabezados
+    const csvHeaders = columns.map(col => col.label).join(',');
+    
+    // Preparar filas
+    const csvRows = filteredData.map(row => {
+      return columns.map(col => {
+        let cellVal = row[col.key];
+        // Escapar comillas dobles y envolver en comillas si hay comas o saltos de línea
+        if (cellVal == null) cellVal = '';
+        const stringVal = String(cellVal).replace(/"/g, '""');
+        if (stringVal.includes(',') || stringVal.includes('\n') || stringVal.includes('"')) {
+          return `"${stringVal}"`;
+        }
+        return stringVal;
+      }).join(',');
+    });
+    
+    const csvContent = [csvHeaders, ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `EVM_Export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div style={{ background: 'rgba(15, 23, 42, 0.5)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
+          <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+          <input 
+            type="text" 
+            placeholder="Buscar en todos los campos..." 
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // Reset page on search
+            }}
+            style={{ 
+              width: '100%', padding: '0.6rem 1rem 0.6rem 2.5rem', 
+              background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', 
+              borderRadius: '8px', color: 'white', outline: 'none' 
+            }}
+          />
+        </div>
+        <button
+          onClick={handleExportCSV}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            background: 'rgba(255,255,255,0.05)', color: 'white',
+            border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px',
+            padding: '0.6rem 1rem', cursor: 'pointer', fontWeight: 600,
+            transition: 'background 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+        >
+          <Download size={18} /> Exportar CSV
+        </button>
+      </div>
+
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
           <thead>
@@ -119,10 +200,10 @@ export default function DataTable({ data, columns, onEdit, onDelete, loading }: 
             <option value={10}>10</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
-            <option value={data.length}>Todos</option>
+            <option value={filteredData.length}>Todos</option>
           </select>
           <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>
-            Mostrando {startIndex + 1} a {Math.min(endIndex, data.length)} de {data.length}
+            Mostrando {filteredData.length === 0 ? 0 : startIndex + 1} a {Math.min(endIndex, filteredData.length)} de {filteredData.length}
           </span>
         </div>
 

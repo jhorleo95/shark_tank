@@ -190,3 +190,70 @@ class DetalleSalida(models.Model):
 
     def __str__(self):
         return f"Detalle {self.id} (Salida {self.salida_id})"
+
+class Proforma(models.Model):
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('APROBADO', 'Aprobado'),
+        ('RECHAZADO', 'Rechazado'),
+    ]
+    id = models.BigAutoField(primary_key=True)
+    cliente_nombre = models.CharField(max_length=255)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE')
+    vendedor_id = models.IntegerField(null=True, blank=True) # ID del User
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.RESTRICT, db_constraint=False)
+    observacion = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'proformas'
+
+    def __str__(self):
+        return f"Proforma {self.id} - {self.cliente_nombre}"
+
+class DetalleProforma(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    proforma = models.ForeignKey(Proforma, on_delete=models.CASCADE, db_constraint=False)
+    item = models.ForeignKey(Item, on_delete=models.RESTRICT, db_constraint=False)
+    cantidad = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=12, decimal_places=2)
+    area = models.ForeignKey(Area, on_delete=models.RESTRICT, db_constraint=False)
+
+    class Meta:
+        db_table = 'detalle_proformas'
+
+    def __str__(self):
+        return f"Detalle Proforma {self.id} (Item {self.item.codigo_actual})"
+
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class UserProfile(models.Model):
+    ROLE_CHOICES = [
+        ('Gerencia General', 'Gerencia General'),
+        ('Administrativa', 'Administrativa'),
+        ('Ventas', 'Ventas'),
+        ('RRHH', 'RRHH'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    rol = models.CharField(max_length=50, choices=ROLE_CHOICES, default='Ventas')
+
+    class Meta:
+        db_table = 'user_profiles'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.rol}"
+
+# Señal para auto-crear o actualizar el perfil cuando se crea un usuario
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    try:
+        instance.profile.save()
+    except UserProfile.DoesNotExist:
+        UserProfile.objects.create(user=instance)

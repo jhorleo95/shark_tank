@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from './DataTable';
 import Modal from './Modal';
+import toast from 'react-hot-toast';
 
 interface Field {
   name: string;
@@ -24,6 +25,7 @@ export default function GenericCrud({ title, endpoint, columns, fields }: Generi
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<any>({});
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -33,6 +35,7 @@ export default function GenericCrud({ title, endpoint, columns, fields }: Generi
       setData(json);
     } catch (err) {
       console.error(err);
+      toast.error(`Error al cargar ${title}`);
     } finally {
       setLoading(false);
     }
@@ -57,12 +60,15 @@ export default function GenericCrud({ title, endpoint, columns, fields }: Generi
   const handleDelete = async (row: any) => {
     if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
       try {
-        await fetch(`${API_URL}/${endpoint}/${row.id}/`, {
+        const res = await fetch(`${API_URL}/${endpoint}/${row.id}/`, {
           method: 'DELETE',
         });
+        if (!res.ok) throw new Error('Error deleting');
+        toast.success('Registro eliminado correctamente');
         fetchData();
       } catch (err) {
         console.error(err);
+        toast.error('Error al eliminar el registro');
       }
     }
   };
@@ -72,16 +78,23 @@ export default function GenericCrud({ title, endpoint, columns, fields }: Generi
     const url = editingId ? `${API_URL}/${endpoint}/${editingId}/` : `${API_URL}/${endpoint}/`;
     const method = editingId ? 'PUT' : 'POST';
 
+    setIsSubmitting(true);
     try {
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+      if (!res.ok) throw new Error('Error saving');
+      
+      toast.success(editingId ? 'Registro actualizado' : 'Registro creado');
       setIsModalOpen(false);
       fetchData();
     } catch (err) {
       console.error(err);
+      toast.error('Ocurrió un error al guardar el registro');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -133,8 +146,10 @@ export default function GenericCrud({ title, endpoint, columns, fields }: Generi
             </div>
           ))}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
-            <button type="button" onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', color: '#94a3b8', border: 'none', cursor: 'pointer' }}>Cancelar</button>
-            <button type="submit" style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: 'pointer' }}>Guardar</button>
+            <button type="button" onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', color: '#94a3b8', border: 'none', cursor: 'pointer' }} disabled={isSubmitting}>Cancelar</button>
+            <button type="submit" style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }} disabled={isSubmitting}>
+              {isSubmitting ? 'Guardando...' : 'Guardar'}
+            </button>
           </div>
         </form>
       </Modal>

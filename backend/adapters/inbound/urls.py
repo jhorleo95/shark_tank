@@ -6,6 +6,7 @@ from .views import (
     SucursalViewSet, TipoIngresoViewSet, TipoSalidaViewSet,
     StockSucursalViewSet, EntradaProductoViewSet, DetalleEntradaViewSet,
     SalidaProductoViewSet, DetalleSalidaViewSet,
+    ProformaViewSet, DetalleProformaViewSet,
     UserProfileView, ChangePasswordView
 )
 
@@ -24,6 +25,8 @@ router.register(r'entradas', EntradaProductoViewSet)
 router.register(r'detalle-entradas', DetalleEntradaViewSet)
 router.register(r'salidas', SalidaProductoViewSet)
 router.register(r'detalle-salidas', DetalleSalidaViewSet)
+router.register(r'proformas', ProformaViewSet)
+router.register(r'detalle-proformas', DetalleProformaViewSet)
 
 urlpatterns = [
     path('v1/', include(router.urls)),

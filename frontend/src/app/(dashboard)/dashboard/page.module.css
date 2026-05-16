@@ -124,7 +124,14 @@
   color: #64748b;
 }
 
-/* Charts */
+/* Charts & Expert Section */
+.expertGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
 .chartsGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -132,7 +139,7 @@
 }
 
 @media (max-width: 1024px) {
-  .chartsGrid {
+  .chartsGrid, .expertGrid {
     grid-template-columns: 1fr;
   }
 }
@@ -201,7 +208,14 @@
   gap: 1rem;
   padding: 1rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  transition: background 0.2s;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.activityItem:hover {
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateX(4px);
 }
 
 .activityItem:last-child {

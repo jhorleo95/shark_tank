@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/ui/DataTable';
 import Modal from '@/components/ui/Modal';
+import toast from 'react-hot-toast';
 
 const API_URL = 'http://127.0.0.1:8000/api/v1';
 
@@ -10,6 +11,7 @@ export default function ProductosPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<any>({ estado: 'ACTIVO' });
   const [file, setFile] = useState<File | null>(null);
@@ -64,6 +66,7 @@ export default function ProductosPage() {
       }
     } catch (err) {
       console.error("fetchData falló:", err);
+      toast.error('Error al cargar productos');
     } finally {
       setLoading(false);
     }
@@ -91,10 +94,13 @@ export default function ProductosPage() {
   const handleDelete = async (row: any) => {
     if (confirm('¿Eliminar producto?')) {
       try {
-        await fetch(`${API_URL}/items/${row.id}/`, { method: 'DELETE' });
+        const res = await fetch(`${API_URL}/items/${row.id}/`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Error deleting');
+        toast.success('Producto eliminado correctamente');
         fetchData();
       } catch (err) {
         console.error(err);
+        toast.error('Error al eliminar producto');
       }
     }
   };
@@ -124,12 +130,18 @@ export default function ProductosPage() {
       submitData.append('fotografia', file);
     }
 
+    setIsSubmitting(true);
     try {
-      await fetch(url, { method, body: submitData });
+      const res = await fetch(url, { method, body: submitData });
+      if (!res.ok) throw new Error('Error saving');
+      toast.success(editingId ? 'Producto actualizado' : 'Producto creado');
       setIsModalOpen(false);
       fetchData();
     } catch (err) {
       console.error(err);
+      toast.error('Ocurrió un error al guardar el producto');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -210,8 +222,10 @@ export default function ProductosPage() {
           </div>
 
           <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
-            <button type="button" onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', color: '#94a3b8', border: 'none', cursor: 'pointer' }}>Cancelar</button>
-            <button type="submit" style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: 'pointer' }}>Guardar</button>
+            <button type="button" onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', color: '#94a3b8', border: 'none', cursor: 'pointer' }} disabled={isSubmitting}>Cancelar</button>
+            <button type="submit" style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }} disabled={isSubmitting}>
+              {isSubmitting ? 'Guardando...' : 'Guardar'}
+            </button>
           </div>
         </form>
       </Modal>

@@ -1,7 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Package, CheckCircle, AlertTriangle, DollarSign, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
+import InventoryHealthCard from '@/components/dashboard/InventoryHealthCard';
+import PredictiveInsights from '@/components/dashboard/PredictiveInsights';
 import styles from './page.module.css';
 
 const API_URL = 'http://127.0.0.1:8000/api/v1';
@@ -127,6 +130,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* EVM AI Expert System Section */}
+      <div className={styles.expertGrid}>
+        <InventoryHealthCard items={items} />
+        <PredictiveInsights items={items} />
+      </div>
+
       <div className={styles.chartsGrid}>
         <div className={styles.chartCard}>
           <h2 className={styles.chartTitle}>Crecimiento del Inventario (2026)</h2>
@@ -174,7 +183,9 @@ export default function DashboardPage() {
       <div className={styles.recentActivity}>
         <div className={styles.activityHeader}>
           <h2 className={styles.chartTitle}>Últimos Productos Añadidos</h2>
-          <button className={styles.viewAllBtn}>Ver Todos</button>
+          <Link href="/productos" style={{ textDecoration: 'none' }}>
+            <button className={styles.viewAllBtn}>Ver Todos</button>
+          </Link>
         </div>
         <div className={styles.activityList}>
           {items.slice(-5).reverse().map((item: any) => (

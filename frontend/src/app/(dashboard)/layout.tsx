@@ -1,6 +1,7 @@
 import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
 import AuthGuard from '@/components/auth/AuthGuard';
+import ToasterProvider from '@/components/ui/ToasterProvider';
 
 export default function DashboardLayout({
   children,
@@ -10,6 +11,7 @@ export default function DashboardLayout({
   return (
     <AuthGuard>
       <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)' }}>
+        <ToasterProvider />
         <Sidebar />
         <div style={{ flex: 1, marginLeft: '260px', display: 'flex', flexDirection: 'column' }}>
           <Topbar />

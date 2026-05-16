@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import styles from './Topbar.module.css';
 import ProfileModal from '@/components/ui/ProfileModal';
+import CommandPalette from '@/components/ui/CommandPalette';
 
 export default function Topbar() {
   const [user, setUser] = useState<any>(null);
@@ -41,18 +42,20 @@ export default function Topbar() {
   return (
     <>
       <header className={styles.topbar}>
-        <div className={styles.searchContainer}>
+        <div className={styles.searchContainer} onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}>
           <input 
             type="text" 
-            placeholder="Buscar productos, lotes o facturas..." 
+            placeholder="Buscar (Ctrl + K)..." 
             className={styles.search} 
+            readOnly
+            style={{ cursor: 'pointer' }}
           />
         </div>
         
         <div className={styles.profile} onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
           <div className={styles.userInfo}>
             <span className={styles.userName}>{getDisplayName()}</span>
-            <span className={styles.userRole}>Administrador</span>
+            <span className={styles.userRole}>{user?.rol || 'Administrador'}</span>
           </div>
           <div className={styles.avatar}>{getInitial()}</div>
         </div>
@@ -64,6 +67,7 @@ export default function Topbar() {
         user={user} 
         onUpdateSuccess={fetchProfile}
       />
+      <CommandPalette />
     </>
   );
 }
