@@ -34,6 +34,7 @@ export default function Sidebar() {
     { name: 'Proformas', href: '/proformas', icon: '📝' },
     { name: 'Entradas', href: '/entradas', icon: '📥' },
     { name: 'Salidas', href: '/salidas', icon: '📤' },
+    { name: 'Personal', href: '/personal', icon: '👥' },
   ];
 
   const catalogLinks = [
@@ -50,9 +51,9 @@ export default function Sidebar() {
   const filteredMainLinks = mainLinks.filter(link => {
     if (!role) return true; // Show all while loading
     if (role === 'Gerencia General') return true;
-    if (role === 'Administrativa') return true;
+    if (role === 'Administrativa') return link.name !== 'Personal';
     if (role === 'Ventas') return link.name === 'Salidas' || link.name === 'Proformas';
-    if (role === 'RRHH') return false;
+    if (role === 'RRHH') return link.name === 'Personal';
     return false;
   });
 

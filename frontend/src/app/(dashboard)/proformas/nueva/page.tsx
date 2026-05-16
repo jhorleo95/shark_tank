@@ -241,33 +241,34 @@ export default function NuevaProformaPage() {
         </div>
 
         {cart.length > 0 ? (
-          <div>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', textAlign: 'left', color: '#94a3b8' }}>
-                  <th style={{ padding: '0.75rem' }}>Producto</th>
-                  <th style={{ padding: '0.75rem' }}>Precio Unit.</th>
-                  <th style={{ padding: '0.75rem' }}>Cant.</th>
-                  <th style={{ padding: '0.75rem' }}>Subtotal</th>
-                  <th style={{ padding: '0.75rem' }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {cart.map((c, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '0.75rem', color: 'white' }}>{c.item_nombre}</td>
-                    <td style={{ padding: '0.75rem', color: '#94a3b8' }}>Bs. {c.precio_unitario}</td>
-                    <td style={{ padding: '0.75rem', color: 'white' }}>{c.cantidad}</td>
-                    <td style={{ padding: '0.75rem', color: '#4ade80', fontWeight: 'bold' }}>Bs. {(c.cantidad * c.precio_unitario).toFixed(2)}</td>
-                    <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                      <button onClick={() => removeFromCart(i)} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer' }}>
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
+            <div className="premium-table-container" style={{ marginTop: '1rem' }}>
+              <table className="premium-table">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Precio Unit.</th>
+                    <th>Cant.</th>
+                    <th>Subtotal</th>
+                    <th></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cart.map((c, i) => (
+                    <tr key={i}>
+                      <td>{c.item_nombre}</td>
+                      <td>Bs. {c.precio_unitario}</td>
+                      <td>{c.cantidad}</td>
+                      <td style={{ color: '#4ade80', fontWeight: 'bold' }}>Bs. {(c.cantidad * c.precio_unitario).toFixed(2)}</td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button onClick={() => removeFromCart(i)} className="action-btn action-btn-delete">
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
               <div style={{ fontSize: '1.25rem', color: 'white' }}>

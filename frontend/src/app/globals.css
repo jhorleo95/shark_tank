@@ -73,6 +73,110 @@ a {
   box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
 }
 
+/* Premium Table Styles */
+.premium-table-container {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.premium-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 1000px;
+}
+
+.premium-table th {
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+  font-weight: 600;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
+.premium-table th:first-child {
+  border-top-left-radius: 16px;
+}
+
+.premium-table th:last-child {
+  border-top-right-radius: 16px;
+}
+
+.premium-table td {
+  padding: 1.25rem 1.5rem;
+  vertical-align: middle;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.2s ease;
+}
+
+.premium-table tbody tr {
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.premium-table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: scale(1.001);
+}
+
+.premium-table tbody tr:hover td {
+  color: #ffffff;
+}
+
+.premium-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-btn-edit {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.action-btn-edit:hover {
+  background: rgba(59, 130, 246, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.action-btn-delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.action-btn-delete:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

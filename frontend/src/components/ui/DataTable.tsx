@@ -88,7 +88,7 @@ export default function DataTable({ data, columns, onEdit, onDelete, loading }: 
   };
 
   return (
-    <div style={{ background: 'rgba(15, 23, 42, 0.5)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+    <div className="premium-table-container">
       <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
           <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
@@ -124,34 +124,34 @@ export default function DataTable({ data, columns, onEdit, onDelete, loading }: 
       </div>
 
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
+        <table className="premium-table">
           <thead>
-            <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            <tr>
               {columns.map(col => (
-                <th key={col.key} style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: '#94a3b8', width: (col as any).width }}>
+                <th key={col.key} style={{ width: (col as any).width }}>
                   {col.label}
                 </th>
               ))}
               {(onEdit || onDelete) && (
-                <th style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: '#94a3b8', width: '150px' }}>Acciones</th>
+                <th style={{ width: '150px', textAlign: 'right' }}>Acciones</th>
               )}
             </tr>
           </thead>
           <tbody>
             {currentData.map((row, index) => (
-              <tr key={row.id || index} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <tr key={row.id || index}>
                 {columns.map(col => (
-                  <td key={col.key} style={{ padding: '1rem', verticalAlign: 'top' }}>
+                  <td key={col.key}>
                     {col.render ? col.render(row) : row[col.key]}
                   </td>
                 ))}
                 {(onEdit || onDelete) && (
-                  <td style={{ padding: '1rem', textAlign: 'right', verticalAlign: 'top' }}>
+                  <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                       {onEdit && (
                         <button 
                           onClick={() => onEdit(row)}
-                          style={{ background: 'var(--primary)', border: 'none', color: 'white', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer' }}
+                          className="action-btn action-btn-edit"
                         >
                           Editar
                         </button>
@@ -159,7 +159,7 @@ export default function DataTable({ data, columns, onEdit, onDelete, loading }: 
                       {onDelete && (
                         <button 
                           onClick={() => onDelete(row)}
-                          style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer' }}
+                          className="action-btn action-btn-delete"
                         >
                           Eliminar
                         </button>

@@ -7,7 +7,7 @@ from .views import (
     StockSucursalViewSet, EntradaProductoViewSet, DetalleEntradaViewSet,
     SalidaProductoViewSet, DetalleSalidaViewSet,
     ProformaViewSet, DetalleProformaViewSet,
-    UserProfileView, ChangePasswordView
+    UserProfileView, ChangePasswordView, UserAdminViewSet
 )
 
 router = DefaultRouter()
@@ -27,6 +27,7 @@ router.register(r'salidas', SalidaProductoViewSet)
 router.register(r'detalle-salidas', DetalleSalidaViewSet)
 router.register(r'proformas', ProformaViewSet)
 router.register(r'detalle-proformas', DetalleProformaViewSet)
+router.register(r'usuarios', UserAdminViewSet, basename='usuarios')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

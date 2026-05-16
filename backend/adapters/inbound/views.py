@@ -191,3 +191,17 @@ class ChangePasswordView(APIView):
             user.save()
             return Response({"detail": "Contraseña actualizada exitosamente."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from django.contrib.auth.models import User
+from .serializers import UserAdminSerializer
+
+class UserAdminViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('-id')
+    serializer_class = UserAdminSerializer
+    permission_classes = [IsAuthenticated] # Podría restringirse a is_staff o is_superuser si se desea
+
+    def destroy(self, request, *args, **kwargs):
+        user = self.get_object()
+        if user == request.user:
+            return Response({'error': 'No puedes eliminarte a ti mismo.'}, status=status.HTTP_400_BAD_REQUEST)
+        return super().destroy(request, *args, **kwargs)
