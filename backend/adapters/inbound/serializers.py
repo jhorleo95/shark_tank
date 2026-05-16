@@ -2,8 +2,10 @@ from rest_framework import serializers
 from adapters.outbound.models import (
     Item, Marca, Categoria, Area, UnidadMedida, AreaCategoria,
     Sucursal, TipoIngreso, TipoSalida, StockSucursal,
-    EntradaProducto, DetalleEntrada, SalidaProducto, DetalleSalida
+    EntradaProducto, DetalleEntrada, SalidaProducto, DetalleSalida,
+    Proforma, DetalleProforma
 )
+from django.contrib.auth.models import User
 
 class MarcaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -89,7 +91,6 @@ class SalidaProductoSerializer(serializers.ModelSerializer):
         model = SalidaProducto
         fields = '__all__'
 
-from adapters.outbound.models import Proforma, DetalleProforma
 
 class DetalleProformaSerializer(serializers.ModelSerializer):
     item_detalle = ItemSerializer(source='item', read_only=True)
@@ -107,7 +108,6 @@ class ProformaSerializer(serializers.ModelSerializer):
         model = Proforma
         fields = '__all__'
 
-from django.contrib.auth.models import User
 
 class UserProfileSerializer(serializers.ModelSerializer):
     rol = serializers.CharField(source='profile.rol', read_only=True)

@@ -69,7 +69,7 @@ const SOCIALS = [
 export default function EvolucionMedicLanding() {
   const [scrollY, setScrollY]             = useState(0);
   const [countersOn, setCountersOn]       = useState(false);
-  const [hoveredSocial, setHoveredSocial] = useState(null);
+  const [hoveredSocial, setHoveredSocial] = useState<number | null>(null);
   const statsRef = useRef(null);
 
   useEffect(() => {

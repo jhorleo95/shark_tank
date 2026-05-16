@@ -241,6 +241,7 @@ export default function NuevaProformaPage() {
         </div>
 
         {cart.length > 0 ? (
+          <div>
             <div className="premium-table-container" style={{ marginTop: '1rem' }}>
               <table className="premium-table">
                 <thead>

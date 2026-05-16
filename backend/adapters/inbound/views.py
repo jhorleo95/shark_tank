@@ -10,8 +10,18 @@ from .serializers import (
     AreaSerializer, UnidadMedidaSerializer, AreaCategoriaSerializer,
     SucursalSerializer, TipoIngresoSerializer, TipoSalidaSerializer,
     StockSucursalSerializer, EntradaProductoSerializer, DetalleEntradaSerializer,
-    SalidaProductoSerializer, DetalleSalidaSerializer
+    SalidaProductoSerializer, DetalleSalidaSerializer,
+    ProformaSerializer, DetalleProformaSerializer,
+    UserProfileSerializer, ChangePasswordSerializer, UserAdminSerializer
 )
+from rest_framework.decorators import action
+from adapters.outbound.models import Proforma, DetalleProforma
+from django.utils import timezone
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
 
 class MarcaViewSet(viewsets.ModelViewSet):
     queryset = Marca.objects.all()
@@ -91,10 +101,6 @@ class DetalleSalidaViewSet(viewsets.ModelViewSet):
             stock.cantidad_saldo -= detalle.cantidad
             stock.save()
 
-from rest_framework.decorators import action
-from .serializers import ProformaSerializer, DetalleProformaSerializer
-from adapters.outbound.models import Proforma, DetalleProforma
-from django.utils import timezone
 
 class DetalleProformaViewSet(viewsets.ModelViewSet):
     queryset = DetalleProforma.objects.all()
@@ -157,11 +163,6 @@ class ProformaViewSet(viewsets.ModelViewSet):
         proforma.save()
         return Response({'status': 'Proforma rechazada.'})
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from .serializers import UserProfileSerializer, ChangePasswordSerializer
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -192,8 +193,6 @@ class ChangePasswordView(APIView):
             return Response({"detail": "Contraseña actualizada exitosamente."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from django.contrib.auth.models import User
-from .serializers import UserAdminSerializer
 
 class UserAdminViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-id')

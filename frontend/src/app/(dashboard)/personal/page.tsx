@@ -19,8 +19,14 @@ export default function PersonalPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/usuarios/`);
+      const token = localStorage.getItem('access_token');
+      const res = await fetch(`${API_URL}/usuarios/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const json = await res.json();
+      if (!res.ok) throw new Error(json.detail || 'Error fetching');
       setData(json);
     } catch (err) {
       console.error(err);
@@ -54,8 +60,12 @@ export default function PersonalPage() {
   const handleDelete = async (row: any) => {
     if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
       try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${API_URL}/usuarios/${row.id}/`, {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
         if (!res.ok) {
           const errData = await res.json();
@@ -88,9 +98,13 @@ export default function PersonalPage() {
 
     setIsSubmitting(true);
     try {
+      const token = localStorage.getItem('access_token');
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(payload),
       });
       
